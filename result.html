@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAI 情境焦慮量表 - 結果</title>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --text-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+            --low-anxiety: #2ecc71;
+            --medium-anxiety: #f1c40f;
+            --high-anxiety: #e74c3c;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1, h2 {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        
+        h1 {
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+            color: var(--primary-color);
+        }
+        
+        h2 {
+            font-size: 1.4em;
+            color: var(--accent-color);
+        }
+        
+        .player-info {
+            background-color: var(--light-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .score-section {
+            text-align: center;
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .total-score {
+            font-size: 36px;
+            color: var(--primary-color);
+            font-weight: bold;
+            margin: 15px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .anxiety-level {
+            font-size: 20px;
+            color: var(--text-color);
+            margin: 15px 0;
+            padding: 8px 16px;
+            border-radius: 8px;
+            display: inline-block;
+        }
+        
+        .anxiety-level.low {
+            background-color: var(--low-anxiety);
+            color: var(--white);
+        }
+        
+        .anxiety-level.medium {
+            background-color: var(--medium-anxiety);
+            color: var(--text-color);
+        }
+        
+        .anxiety-level.high {
+            background-color: var(--high-anxiety);
+            color: var(--white);
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 15px 0;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            font-size: 14px;
+        }
+        
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #e0e0e0;
+        }
+        
+        th {
+            background-color: var(--primary-color);
+            color: var(--white);
+            font-weight: bold;
+        }
+        
+        tr:nth-child(even) {
+            background-color: var(--light-bg);
+        }
+        
+        tr.low-anxiety {
+            background-color: rgba(46, 204, 113, 0.1);
+        }
+        
+        tr.medium-anxiety {
+            background-color: rgba(241, 196, 15, 0.1);
+        }
+        
+        tr.high-anxiety {
+            background-color: rgba(231, 76, 60, 0.1);
+        }
+        
+        .reverse-score {
+            color: var(--accent-color);
+            font-style: italic;
+        }
+        
+        .recommendation-section {
+            margin: 20px 0;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+        }
+        
+        textarea {
+            width: -webkit-fill-available;
+            height: 120px;
+            min-height: 120px;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            margin-top: 10px;
+            font-family: inherit;
+            resize: vertical;
+            transition: border-color 0.3s;
+            font-size: 14px;
+        }
+        
+        textarea:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+        }
+        
+        .save-button, .restart-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            min-width: 120px;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: var(--white);
+        }
+        
+        .save-button {
+            background-color: var(--primary-color);
+        }
+        
+        .restart-button {
+            background-color: var(--accent-color);
+        }
+        
+        .save-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .restart-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            
+            h2 {
+                font-size: 1.2em;
+                margin-bottom: 15px;
+            }
+            
+            .player-info, .score-section, .recommendation-section {
+                padding: 12px;
+            }
+            
+            .total-score {
+                font-size: 32px;
+                margin: 12px 0;
+            }
+            
+            .anxiety-level {
+                font-size: 18px;
+                padding: 6px 12px;
+                margin: 12px 0;
+            }
+            
+            table {
+                font-size: 13px;
+            }
+            
+            th, td {
+                padding: 8px;
+            }
+            
+            textarea {
+                height: 100px;
+                font-size: 13px;
+                padding: 10px;
+                width: -webkit-fill-available;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                gap: 10px;
+            }
+            
+            .save-button, .restart-button {
+                width: 100%;
+                padding: 10px 20px;
+                font-size: 15px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>STAI 情境焦慮量表 - 測驗結果</h1>
+        
+        <div class="player-info">
+            <h2>選手資訊</h2>
+            <p>姓名：<span id="playerName"></span></p>
+            <p>運動項目：<span id="sport"></span></p>
+        </div>
+
+        <div class="score-section">
+            <h2>測驗結果</h2>
+            <div class="total-score" id="totalScore"></div>
+            <div class="anxiety-level" id="anxietyLevel"></div>
+        </div>
+
+        <h2>各題得分明細</h2>
+        <table id="scoreDetails">
+            <thead>
+                <tr>
+                    <th>題號</th>
+                    <th>題目</th>
+                    <th>得分</th>
+                    <th>備註</th>
+                </tr>
+            </thead>
+            <tbody>
+            </tbody>
+        </table>
+
+        <table>
+            <tr>
+                <th>STAI 分數區間</th>
+                <th>焦慮程度</th>
+                <th>說明</th>
+            </tr>
+            <tr class="low-anxiety">
+                <td>20–37</td>
+                <td>低焦慮</td>
+                <td>正常範圍，日常無明顯焦慮困擾</td>
+            </tr>
+            <tr class="medium-anxiety">
+                <td>38–44</td>
+                <td>中度焦慮</td>
+                <td>有部分焦慮症狀，需觀察或適度調整</td>
+            </tr>
+            <tr class="high-anxiety">
+                <td>45–80</td>
+                <td>高焦慮</td>
+                <td>明顯焦慮狀態，建議進行介入與追蹤</td>
+            </tr>
+        </table>
+
+        <div class="recommendation-section">
+            <h2>心理介入建議</h2>
+            <p>根據 STAI 評估出的焦慮程度進行分組：</p>
+            <ul>
+                <li>高焦慮組 → 導入 SMR 神經回饋訓練 或呼吸調節訓練</li>
+                <li>低焦慮組 → 持續強化專注與動作穩定性</li>
+            </ul>
+        </div>
+
+        <div class="recommendation-section">
+            <h2>運動心理評估與建議</h2>
+            <textarea id="psychologistNotes" placeholder="請在此輸入對選手的運動心理評估與建議..."></textarea>
+            <div class="button-container">
+                <button class="save-button" onclick="saveNotes()">儲存評估建議</button>
+                <button class="restart-button" onclick="restartTest()">重新測驗</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            "我現在覺得心裡平靜",
+            "我現在覺得安全",
+            "我現在是緊繃的",
+            "我現在覺得很緊張",
+            "我現在覺得很放鬆",
+            "我現在覺得生氣",
+            "我現在正擔心可能將有不幸的事會發生",
+            "我現在覺得很滿意",
+            "我現在覺得害怕",
+            "我現在覺得心裡舒適",
+            "我覺得我是自信的",
+            "我覺得我很神經質",
+            "我常常是戰戰兢兢的",
+            "我覺得自己優柔寡斷",
+            "我現在是放鬆的",
+            "我現在覺得很滿足",
+            "我現在是憂慮的",
+            "我現在覺得困惑",
+            "我現在覺得穩定",
+            "我現在覺得很愉快"
+        ];
+
+        const reverseQuestions = [1, 2, 5, 8, 10, 11, 15, 16, 19, 20];
+
+        const playerName = localStorage.getItem('playerName');
+        const sport = localStorage.getItem('sport');
+        const totalScore = parseInt(localStorage.getItem('staiTotalScore'));
+        const answers = JSON.parse(localStorage.getItem('staiAnswers'));
+
+        document.getElementById('playerName').textContent = playerName;
+        document.getElementById('sport').textContent = sport;
+        document.getElementById('totalScore').textContent = totalScore;
+
+        let anxietyLevel = '';
+        let anxietyClass = '';
+        
+        if (totalScore <= 37) {
+            anxietyLevel = '低焦慮';
+            anxietyClass = 'low';
+        } else if (totalScore <= 44) {
+            anxietyLevel = '中度焦慮';
+            anxietyClass = 'medium';
+        } else {
+            anxietyLevel = '高焦慮';
+            anxietyClass = 'high';
+        }
+        
+        const anxietyLevelElement = document.getElementById('anxietyLevel');
+        anxietyLevelElement.textContent = `焦慮程度：${anxietyLevel}`;
+        anxietyLevelElement.classList.add(anxietyClass);
+
+        // 顯示各題得分
+        const scoreDetails = document.querySelector('#scoreDetails tbody');
+        answers.forEach((score, index) => {
+            const row = document.createElement('tr');
+            const isReverse = reverseQuestions.includes(index + 1);
+            const originalScore = isReverse ? 5 - score : score;
+            
+            row.innerHTML = `
+                <td>${index + 1}</td>
+                <td>${questions[index]}</td>
+                <td>${score}</td>
+                <td>${isReverse ? '<span class="reverse-score">反向計分</span>' : ''}</td>
+            `;
+            scoreDetails.appendChild(row);
+        });
+
+        function saveNotes() {
+            const notes = document.getElementById('psychologistNotes').value;
+            // 取得現有資料
+            const playerName = localStorage.getItem('playerName');
+            const sport = localStorage.getItem('sport');
+            const totalScore = localStorage.getItem('staiTotalScore');
+            const answers = localStorage.getItem('staiAnswers');
+            const timestamp = new Date().toISOString();
+            // 新增一筆紀錄
+            const record = {
+                playerName,
+                sport,
+                totalScore,
+                answers,
+                notes,
+                timestamp
+            };
+            let results = JSON.parse(localStorage.getItem('staiResults') || '[]');
+            results.push(record);
+            localStorage.setItem('staiResults', JSON.stringify(results));
+            // 仍然單獨存 notes 以便頁面顯示
+            localStorage.setItem('psychologistNotes', notes);
+            alert('評估建議已儲存！');
+            window.location.href = 'results_overview.html';
+        }
+
+        function restartTest() {
+            // 清除測驗相關的數據
+            localStorage.removeItem('staiAnswers');
+            localStorage.removeItem('staiTotalScore');
+            localStorage.removeItem('psychologistNotes');
+            // 保留選手資訊，方便重新測驗
+            window.location.href = 'index.html';
+        }
+
+        const savedNotes = localStorage.getItem('psychologistNotes');
+        if (savedNotes) {
+            document.getElementById('psychologistNotes').value = savedNotes;
+        }
+    </script>
+</body>
+</html> 

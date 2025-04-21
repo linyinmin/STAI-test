@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAI 情境焦慮量表 - 測驗</title>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --text-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            min-height: 100vh;
+        }
+        
+        .header {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: var(--white);
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            z-index: 1000;
+        }
+        
+        .header-content {
+            max-width: 800px;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        
+        .header-left {
+            flex: 1;
+            min-width: 200px;
+        }
+        
+        .header-right {
+            margin-left: 10px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 160px auto;
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0 0 15px 0;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .progress-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .progress-bar {
+            flex: 1;
+            height: 10px;
+            background-color: var(--light-bg);
+            border-radius: 6px;
+            overflow: hidden;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.1);
+        }
+        
+        .progress {
+            width: 0%;
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            border-radius: 6px;
+            transition: width 0.3s ease-in-out;
+        }
+        
+        .progress-text {
+            min-width: 50px;
+            font-size: 14px;
+            color: var(--text-color);
+            font-weight: bold;
+            text-align: right;
+        }
+        
+        .question {
+            margin-bottom: 20px;
+            padding: 15px;
+            background-color: var(--light-bg);
+            border-radius: 10px;
+            border: 1px solid var(--accent-color);
+            transition: transform 0.3s;
+        }
+        
+        .question h3 {
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            color: var(--text-color);
+        }
+        
+        .options {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .option {
+            padding: 12px;
+            font-size: 14px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            cursor: pointer;
+            text-align: center;
+            transition: all 0.3s;
+            background-color: var(--white);
+        }
+        
+        .option:hover {
+            background-color: var(--light-bg);
+            border-color: var(--primary-color);
+            transform: translateY(-2px);
+        }
+        
+        .option.selected {
+            background-color: var(--primary-color);
+            color: var(--white);
+            border-color: var(--primary-color);
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .button-container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 20px;
+            gap: 15px;
+        }
+        
+        .back-button, .submit-button {
+            padding: 12px 24px;
+            font-size: 16px;
+            min-width: 120px;
+            width: 100%;
+            border: none;
+            border-radius: 8px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            color: var(--white);
+        }
+        
+        .back-button {
+            background-color: var(--accent-color);
+        }
+        
+        .submit-button {
+            background-color: var(--primary-color);
+        }
+        
+        .back-button:hover {
+            background-color: #2980b9;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        .submit-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 480px) {
+            .header {
+                padding: 10px;
+            }
+            
+            .container {
+                margin: 140px auto 15px;
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 10px;
+            }
+            
+            .progress-container {
+                gap: 8px;
+            }
+            
+            .progress-bar {
+                height: 8px;
+            }
+            
+            .progress-text {
+                font-size: 13px;
+                min-width: 45px;
+            }
+            
+            .question {
+                margin-bottom: 15px;
+                padding: 12px;
+            }
+            
+            .question h3 {
+                font-size: 1em;
+                margin-bottom: 12px;
+            }
+            
+            .options {
+                gap: 8px;
+            }
+            
+            .option {
+                padding: 10px;
+                font-size: 13px;
+            }
+            
+            .back-button, .submit-button {
+                padding: 10px 20px;
+                font-size: 15px;
+                min-width: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1>STAI 情境焦慮量表</h1>
+                <div class="progress-container">
+                    <div class="progress-bar">
+                        <div class="progress" id="progressBar"></div>
+                    </div>
+                    <div class="progress-text" id="progressText">0/20</div>
+                </div>
+            </div>
+            <div class="header-right">
+                <button class="back-button" onclick="goBack()">返回</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <form id="questionnaireForm" onsubmit="return submitTest(event)">
+            <div id="questions"></div>
+            <div class="button-container">
+                <button type="submit" class="submit-button">提交測驗</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        const questions = [
+            "我現在覺得心裡平靜",
+            "我現在覺得安全",
+            "我現在是緊繃的",
+            "我現在覺得很緊張",
+            "我現在覺得很放鬆",
+            "我現在覺得生氣",
+            "我現在正擔心可能將有不幸的事會發生",
+            "我現在覺得很滿意",
+            "我現在覺得害怕",
+            "我現在覺得心裡舒適",
+            "我覺得我是自信的",
+            "我覺得我很神經質",
+            "我常常是戰戰兢兢的",
+            "我覺得自己優柔寡斷",
+            "我現在是放鬆的",
+            "我現在覺得很滿足",
+            "我現在是憂慮的",
+            "我現在覺得困惑",
+            "我現在覺得穩定",
+            "我現在覺得很愉快"
+        ];
+
+        const options = [
+            "完全不符合",
+            "有一點符合",
+            "頗為符合",
+            "非常符合"
+        ];
+
+        const reverseQuestions = [1, 2, 5, 8, 10, 11, 15, 16, 19, 20];
+
+        function createQuestion(index, question) {
+            const questionDiv = document.createElement('div');
+            questionDiv.className = 'question';
+            questionDiv.innerHTML = `
+                <h3>第 ${index + 1} 題：${question}</h3>
+                <div class="options">
+                    ${options.map((option, i) => `
+                        <div class="option" onclick="selectOption(this, ${index}, ${i + 1})">
+                            ${option}
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+            return questionDiv;
+        }
+
+        function selectOption(element, questionIndex, value) {
+            const options = element.parentElement.children;
+            for (let option of options) {
+                option.classList.remove('selected');
+            }
+            element.classList.add('selected');
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const totalQuestions = questions.length;
+            const answeredQuestions = document.querySelectorAll('.option.selected').length;
+            const progress = (answeredQuestions / totalQuestions) * 100;
+            document.getElementById('progressBar').style.width = `${progress}%`;
+            document.getElementById('progressText').textContent = `${answeredQuestions}/${totalQuestions}`;
+        }
+
+        function goBack() {
+            // 清除測驗相關的數據
+            localStorage.removeItem('staiAnswers');
+            localStorage.removeItem('staiTotalScore');
+            // 返回開始頁面
+            window.location.href = 'index.html';
+        }
+
+        function submitTest(event) {
+            event.preventDefault();
+            const answers = [];
+            const questions = document.querySelectorAll('.question');
+            
+            for (let i = 0; i < questions.length; i++) {
+                const selectedOption = questions[i].querySelector('.option.selected');
+                if (!selectedOption) {
+                    alert('請回答所有問題！');
+                    return false;
+                }
+                
+                let score = Array.from(selectedOption.parentElement.children).indexOf(selectedOption) + 1;
+                if (reverseQuestions.includes(i + 1)) {
+                    score = 5 - score;
+                }
+                answers.push(score);
+            }
+
+            const totalScore = answers.reduce((a, b) => a + b, 0);
+            
+            localStorage.setItem('staiAnswers', JSON.stringify(answers));
+            localStorage.setItem('staiTotalScore', totalScore);
+            
+            window.location.href = 'result.html';
+        }
+
+        const questionsContainer = document.getElementById('questions');
+        questions.forEach((question, index) => {
+            questionsContainer.appendChild(createQuestion(index, question));
+        });
+    </script>
+</body>
+</html> 

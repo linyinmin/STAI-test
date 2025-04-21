@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>STAI 情境焦慮量表</title>
+    <style>
+        :root {
+            --primary-color: #2ecc71;
+            --secondary-color: #27ae60;
+            --accent-color: #3498db;
+            --text-color: #2c3e50;
+            --light-bg: #f8f9fa;
+            --white: #ffffff;
+        }
+        
+        body {
+            font-family: 'Noto Sans TC', Arial, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 10px;
+            background: linear-gradient(135deg, #2ecc71 0%, #27ae60 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .container {
+            max-width: 800px;
+            width: 100%;
+            background-color: var(--white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 1.8em;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+        
+        .instructions {
+            background-color: var(--light-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .instructions h2 {
+            color: var(--text-color);
+            margin-bottom: 15px;
+            font-size: 1.4em;
+        }
+        
+        .instructions ul {
+            padding-left: 20px;
+            margin: 0;
+        }
+        
+        .instructions li {
+            margin-bottom: 8px;
+        }
+        
+        .player-info {
+            background-color: var(--light-bg);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            border: 1px solid var(--accent-color);
+        }
+        
+        .input-group {
+            margin-bottom: 15px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        .start-button {
+            display: block;
+            width: 100%;
+            margin-top: 10px;
+            padding: 15px;
+            background-color: var(--primary-color);
+            color: var(--white);
+            text-align: center;
+            border: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        
+        .start-button:hover {
+            background-color: var(--secondary-color);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 8px rgba(0,0,0,0.15);
+        }
+        
+        @media (max-width: 480px) {
+            body {
+                padding: 5px;
+            }
+            
+            .container {
+                padding: 15px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+                margin-bottom: 15px;
+            }
+            
+            .instructions, .player-info {
+                padding: 12px;
+            }
+            
+            .instructions h2 {
+                font-size: 1.2em;
+                margin-bottom: 12px;
+            }
+            
+            .instructions li {
+                font-size: 14px;
+                margin-bottom: 6px;
+            }
+            
+            input[type="text"],
+            select {
+                font-size: 14px;
+                padding: 10px;
+            }
+            
+            .start-button {
+                padding: 12px;
+                font-size: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>STAI 情境焦慮量表</h1>
+        <div class="instructions">
+            <h2>測驗說明</h2>
+            <p>本量表旨在評估受試者在特定時刻的暫時性焦慮情緒，即「此刻」的感受。</p>
+            <p>請根據您「現在」的真實感受來回答問題，不要花太多時間思考，您的第一印象通常是最準確的。</p>
+            <p>每個問題都有四個選項，請選擇最符合您當前感受的選項。</p>
+            <p>請記住：</p>
+            <ul>
+                <li>沒有對錯的答案</li>
+                <li>請誠實回答</li>
+                <li>不要漏答任何題目</li>
+                <li>請根據「此刻」的感受作答</li>
+            </ul>
+        </div>
+        <div class="player-info">
+            <form id="playerForm" onsubmit="return startTest(event)">
+                <div class="form-group">
+                    <label for="playerName">選手姓名：</label>
+                    <input type="text" id="playerName" name="playerName" required>
+                </div>
+                <div class="form-group">
+                    <label for="sport">運動項目：</label>
+                    <select id="sport" name="sport" required>
+                        <option value="">請選擇運動項目</option>
+                        <option value="跆拳道">跆拳道</option>
+                        <option value="柔道">柔道</option>
+                        <option value="空手道">空手道</option>
+                        <option value="舉重">舉重</option>
+                        <option value="桌球">桌球</option>
+                        <option value="羽球">羽球</option>
+                        <option value="射箭">射箭</option>
+                    </select>
+                </div>
+                <button type="submit" class="start-button">開始測驗</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        function startTest(event) {
+            event.preventDefault();
+            const playerName = document.getElementById('playerName').value;
+            const sport = document.getElementById('sport').value;
+            
+            localStorage.setItem('playerName', playerName);
+            localStorage.setItem('sport', sport);
+            
+            window.location.href = 'questionnaire.html';
+        }
+    </script>
+</body>
+</html> 
