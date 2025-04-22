@@ -42,6 +42,16 @@
             color: var(--accent-color);
             margin-bottom: 10px;
             font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .category-eye {
+            padding: 4px;
+            margin-left: 5px;
+        }
+        .category-eye.showing {
+            opacity: 0.5;
         }
         .record-list {
             list-style: none;
@@ -106,6 +116,65 @@
         }
         .delete-btn:hover {
             background: #c0392b;
+        }
+        .edit-btn {
+            background: #f39c12;
+            color: var(--white);
+            border: none;
+            border-radius: 6px;
+            padding: 8px 18px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-left: 15px;
+            transition: background 0.2s;
+        }
+        .edit-btn:hover {
+            background: #d35400;
+        }
+        .edit-form {
+            margin-top: 15px;
+            padding: 15px;
+            background: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+        }
+        .edit-form input, .edit-form textarea, .edit-form select {
+            width: 100%;
+            padding: 12px;
+            margin: 5px 0 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-family: inherit;
+            font-size: 15px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        .edit-form input:focus, .edit-form textarea:focus, .edit-form select:focus {
+            border-color: var(--accent-color);
+            outline: none;
+        }
+        .edit-form textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+        .edit-form select {
+            background-color: var(--white);
+            cursor: pointer;
+        }
+        .edit-form select:hover {
+            border-color: var(--accent-color);
+        }
+        .edit-form .button-group {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .edit-form label {
+            display: block;
+            margin-bottom: 5px;
+            color: var(--text-color);
+            font-weight: bold;
         }
         .button-group {
             display: flex;
@@ -185,26 +254,59 @@
                 border-radius: 8px;
             }
         }
+        .eye-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            margin-left: 5px;
+            color: var(--accent-color);
+            font-size: 18px;
+            transition: color 0.2s;
+        }
+        .eye-btn:hover {
+            color: #217dbb;
+        }
+        .hidden-name {
+            color: transparent;
+            text-shadow: 0 0 8px rgba(0,0,0,0.5);
+        }
+        /* 添加 icon font 樣式 */
+        .icon-eye {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%233498db'%3E%3Cpath d='M12 4.5C7 4.5 2.73 7.61 1 12c1.73 4.39 6 7.5 11 7.5s9.27-3.11 11-7.5c-1.73-4.39-6-7.5-11-7.5zM12 17c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5zm0-8c-1.66 0-3 1.34-3 3s1.34 3 3 3 3-1.34 3-3-1.34-3-3-3z'/%3E%3C/svg%3E");
+            background-size: contain;
+            background-repeat: no-repeat;
+            vertical-align: middle;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <h1>STAI 測驗結果總覽</h1>
         <button id="backToTest" style="margin-bottom:25px;padding:10px 24px;font-size:16px;background:var(--accent-color);color:#fff;border:none;border-radius:8px;cursor:pointer;box-shadow:0 2px 6px rgba(0,0,0,0.08);font-weight:bold;">回STAI測驗</button>
-        
         <div id="tabs" class="tabs"></div>
         <div id="overview"></div>
     </div>
     
     <script>
+        // 移除舊的全局變數和事件監聽器
+        document.getElementById('backToTest').onclick = function() {
+            window.location.href = 'result_manual.html';
+        };
+        
         // 取得所有紀錄
         let results = JSON.parse(localStorage.getItem('staiResults') || '[]');
+        
         // 依運動項目分類
         let categories = {};
         results.forEach(r => {
             if (!categories[r.sport]) categories[r.sport] = [];
             categories[r.sport].push(r);
         });
+        
         // 產生分類區塊
         const overview = document.getElementById('overview');
         const tabsContainer = document.getElementById('tabs');
@@ -217,6 +319,7 @@
                 const tabButton = document.createElement('button');
                 tabButton.className = `tab-button ${index === 0 ? 'active' : ''}`;
                 tabButton.textContent = sport;
+                tabButton.setAttribute('data-sport', sport);
                 tabButton.onclick = function() {
                     // 移除所有 tab 的 active 狀態
                     document.querySelectorAll('.tab-button').forEach(btn => {
@@ -239,47 +342,259 @@
                 
                 const catDiv = document.createElement('div');
                 catDiv.className = 'category';
-                catDiv.innerHTML = `<div class="category-title">${sport}</div>`;
+                catDiv.innerHTML = `
+                    <div class="category-title">
+                        ${sport}
+                        <button class='eye-btn category-eye' title="點擊顯示所有選手姓名">
+                            <span class="icon-eye"></span> <span style='font-size:13px;'>顯示/隱藏姓名</span>
+                        </button>
+                    </div>
+                `;
                 const ul = document.createElement('ul');
                 ul.className = 'record-list';
+                
+                // 添加分類眼睛按鈕事件
+                const categoryEyeBtn = catDiv.querySelector('.category-eye');
+                categoryEyeBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    const isShowing = this.classList.contains('showing');
+                    
+                    // 切換按鈕狀態
+                    this.classList.toggle('showing');
+                    
+                    // 獲取該分類下所有選手名字和心理師名字元素
+                    const playerNames = ul.querySelectorAll('.player-name');
+                    const psychologistNames = ul.querySelectorAll('.psychologist-name');
+                    
+                    // 更新所有名字的顯示狀態
+                    playerNames.forEach(name => {
+                        if (isShowing) {
+                            name.classList.add('hidden-name');
+                        } else {
+                            name.classList.remove('hidden-name');
+                        }
+                    });
+                    
+                    psychologistNames.forEach(name => {
+                        if (isShowing) {
+                            name.classList.add('hidden-name');
+                        } else {
+                            name.classList.remove('hidden-name');
+                        }
+                    });
+                });
                 
                 categories[sport].forEach((r, idx) => {
                     const li = document.createElement('li');
                     li.className = 'record-item';
+                    
                     // 分級判斷
                     let level = '', badgeClass = '';
                     const score = parseInt(r.totalScore);
                     if (score <= 37) { level = '低焦慮'; badgeClass = 'anxiety-low'; }
                     else if (score <= 44) { level = '中度焦慮'; badgeClass = 'anxiety-medium'; }
                     else { level = '高焦慮'; badgeClass = 'anxiety-high'; }
+                    
                     li.innerHTML = `
-                        <div class="record-info">${r.playerName}　<span style='color:#888;font-size:13px;'>${new Date(r.timestamp).toLocaleString()}</span>　<b>分數：</b>${score}<span class='anxiety-badge ${badgeClass}'>${level}</span></div>
+                        <div class="record-info">
+                            <span class="player-name hidden-name">${r.playerName}</span>
+                            <span style='color:#888;font-size:13px;'>${new Date(r.timestamp).toLocaleString()}</span>
+                            <b>分數：</b>${score}<span class='anxiety-badge ${badgeClass}'>${level}</span>
+                        </div>
                         <div class="button-group">
                             <button class='export-btn'>匯出 PDF</button>
+                            <button class='eye-btn' title="按住顯示姓名"><span class="icon-eye"></span></button>
+                            <button class='edit-btn'>編輯</button>
                             <button class='delete-btn'>刪除</button>
                         </div>
                     `;
+                    
                     // 詳細內容
                     const detail = document.createElement('div');
                     detail.className = 'record-detail';
                     detail.innerHTML = `
-                        <b>姓名：</b>${r.playerName}<br>
+                        <b>姓名：</b><span class="player-name hidden-name">${r.playerName}</span><br>
                         <b>運動項目：</b>${r.sport}<br>
                         <b>總分：</b>${score} <span class='anxiety-badge ${badgeClass}'>${level}</span><br>
+                        <b>心理師：</b><span class="psychologist-name hidden-name">${r.psychologistName || '未填寫'}</span><br>
                         <b>心理師建議：</b><br><div style='white-space:pre-line;margin:8px 0 0 0;'>${r.notes || ''}</div>
                         <b>測驗時間：</b>${new Date(r.timestamp).toLocaleString()}
                     `;
+                    
                     // 點擊展開/收合
                     li.addEventListener('click', function(e) {
-                        if (e.target.classList.contains('export-btn') || e.target.classList.contains('delete-btn')) return;
+                        if (e.target.classList.contains('export-btn') || 
+                            e.target.classList.contains('delete-btn') || 
+                            e.target.classList.contains('edit-btn') || 
+                            e.target.classList.contains('eye-btn') ||
+                            e.target.closest('.eye-btn')) return; // 檢查是否點擊到眼睛按鈕或其子元素
                         this.classList.toggle('active');
                         detail.style.display = this.classList.contains('active') ? 'block' : 'none';
                     });
+                    
+                    // 選手名字顯示按鈕事件
+                    const eyeBtn = li.querySelector('.eye-btn');
+                    eyeBtn.addEventListener('mousedown', function(e) {
+                        e.preventDefault(); // 防止預設行為
+                        e.stopPropagation(); // 阻止事件冒泡
+                        li.querySelector('.player-name').classList.remove('hidden-name');
+                        detail.querySelector('.player-name').classList.remove('hidden-name');
+                        detail.querySelector('.psychologist-name').classList.remove('hidden-name');
+                    });
+                    
+                    eyeBtn.addEventListener('mouseup', function(e) {
+                        e.preventDefault(); // 防止預設行為
+                        e.stopPropagation(); // 阻止事件冒泡
+                        li.querySelector('.player-name').classList.add('hidden-name');
+                        detail.querySelector('.player-name').classList.add('hidden-name');
+                        detail.querySelector('.psychologist-name').classList.add('hidden-name');
+                    });
+                    
+                    eyeBtn.addEventListener('mouseleave', function(e) {
+                        e.preventDefault(); // 防止預設行為
+                        e.stopPropagation(); // 阻止事件冒泡
+                        li.querySelector('.player-name').classList.add('hidden-name');
+                        detail.querySelector('.player-name').classList.add('hidden-name');
+                        detail.querySelector('.psychologist-name').classList.add('hidden-name');
+                    });
+                    
+                    // 編輯功能
+                    li.querySelector('.edit-btn').addEventListener('click', function(e) {
+                        e.stopPropagation();
+                        const editForm = document.createElement('div');
+                        editForm.className = 'edit-form';
+                        editForm.innerHTML = `
+                            <div class="input-group">
+                                <label>選手姓名：</label>
+                                <input type="text" class="edit-player-name" value="${r.playerName}">
+                            </div>
+                            <div class="input-group">
+                                <label>運動項目：</label>
+                                <select class="edit-sport">
+                                    <option value="跆拳道" ${r.sport === '跆拳道' ? 'selected' : ''}>跆拳道</option>
+                                    <option value="柔道" ${r.sport === '柔道' ? 'selected' : ''}>柔道</option>
+                                    <option value="空手道" ${r.sport === '空手道' ? 'selected' : ''}>空手道</option>
+                                    <option value="舉重" ${r.sport === '舉重' ? 'selected' : ''}>舉重</option>
+                                    <option value="桌球" ${r.sport === '桌球' ? 'selected' : ''}>桌球</option>
+                                    <option value="羽球" ${r.sport === '羽球' ? 'selected' : ''}>羽球</option>
+                                    <option value="射箭" ${r.sport === '射箭' ? 'selected' : ''}>射箭</option>
+                                </select>
+                            </div>
+                            <div class="input-group">
+                                <label>總分：</label>
+                                <input type="number" class="edit-score" value="${score}" min="20" max="80">
+                            </div>
+                            <div class="input-group">
+                                <label>心理師姓名：</label>
+                                <input type="text" class="edit-psychologist-name" value="${r.psychologistName || ''}">
+                            </div>
+                            <div class="input-group">
+                                <label>心理師建議：</label>
+                                <textarea class="edit-notes">${r.notes || ''}</textarea>
+                            </div>
+                            <div class="button-group">
+                                <button class="save-btn" style="background: var(--accent-color); color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer;">儲存</button>
+                                <button class="cancel-btn" style="background: #95a5a6; color: white; border: none; padding: 8px 18px; border-radius: 6px; cursor: pointer;">取消</button>
+                            </div>
+                        `;
+                        
+                        // 移除舊的編輯表單（如果存在）
+                        const oldForm = detail.querySelector('.edit-form');
+                        if (oldForm) oldForm.remove();
+                        
+                        detail.appendChild(editForm);
+                        
+                        // 儲存按鈕事件
+                        editForm.querySelector('.save-btn').addEventListener('click', function() {
+                            const newPlayerName = editForm.querySelector('.edit-player-name').value;
+                            const newSport = editForm.querySelector('.edit-sport').value;
+                            const newScore = parseInt(editForm.querySelector('.edit-score').value);
+                            const newPsychologistName = editForm.querySelector('.edit-psychologist-name').value;
+                            const newNotes = editForm.querySelector('.edit-notes').value;
+                            
+                            if (!newPlayerName || !newSport || !newPsychologistName || !newNotes || isNaN(newScore) || newScore < 20 || newScore > 80) {
+                                alert('請填寫所有欄位，且分數必須在20-80之間');
+                                return;
+                            }
+                            
+                            // 更新 localStorage
+                            let results = JSON.parse(localStorage.getItem('staiResults') || '[]');
+                            const index = results.findIndex(item => 
+                                item.playerName === r.playerName && 
+                                item.timestamp === r.timestamp
+                            );
+                            
+                            if (index !== -1) {
+                                results[index].playerName = newPlayerName;
+                                results[index].sport = newSport;
+                                results[index].totalScore = newScore;
+                                results[index].psychologistName = newPsychologistName;
+                                results[index].notes = newNotes;
+                                localStorage.setItem('staiResults', JSON.stringify(results));
+                                
+                                // 更新顯示
+                                r.playerName = newPlayerName;
+                                r.sport = newSport;
+                                r.totalScore = newScore;
+                                r.psychologistName = newPsychologistName;
+                                r.notes = newNotes;
+                                
+                                // 更新分級判斷
+                                let level = '', badgeClass = '';
+                                if (newScore <= 37) { level = '低焦慮'; badgeClass = 'anxiety-low'; }
+                                else if (newScore <= 44) { level = '中度焦慮'; badgeClass = 'anxiety-medium'; }
+                                else { level = '高焦慮'; badgeClass = 'anxiety-high'; }
+                                
+                                // 更新列表顯示
+                                li.querySelector('.player-name').textContent = newPlayerName;
+                                const scoreSpan = li.querySelector('b').nextSibling;
+                                scoreSpan.textContent = newScore;
+                                const badge = li.querySelector('.anxiety-badge');
+                                badge.className = `anxiety-badge ${badgeClass}`;
+                                badge.textContent = level;
+                                
+                                // 更新詳細內容
+                                detail.querySelector('.player-name').textContent = newPlayerName;
+                                const detailScoreSpan = detail.querySelector('b:nth-of-type(3)').nextSibling;
+                                detailScoreSpan.textContent = newScore;
+                                const detailBadge = detail.querySelector('.anxiety-badge');
+                                detailBadge.className = `anxiety-badge ${badgeClass}`;
+                                detailBadge.textContent = level;
+                                
+                                // 修正選擇器問題
+                                const sportElements = detail.querySelectorAll('b');
+                                for (let i = 0; i < sportElements.length; i++) {
+                                    if (sportElements[i].textContent === '運動項目：') {
+                                        sportElements[i].nextSibling.textContent = newSport;
+                                        break;
+                                    }
+                                }
+                                
+                                detail.querySelector('.psychologist-name').textContent = newPsychologistName;
+                                detail.querySelector('div[style*="white-space:pre-line"]').textContent = newNotes;
+                                
+                                // 如果運動項目改變，需要重新整理頁面
+                                if (newSport !== r.sport) {
+                                    location.reload();
+                                }
+                            }
+                            
+                            editForm.remove();
+                        });
+                        
+                        // 取消按鈕事件
+                        editForm.querySelector('.cancel-btn').addEventListener('click', function() {
+                            editForm.remove();
+                        });
+                    });
+                    
                     // 匯出 PDF
                     li.querySelector('.export-btn').addEventListener('click', function(e) {
                         e.stopPropagation();
                         exportPDF(r);
                     });
+                    
                     // 刪除功能
                     li.querySelector('.delete-btn').addEventListener('click', function(e) {
                         e.stopPropagation();
@@ -308,17 +623,17 @@
                             }
                         }
                     });
+                    
                     ul.appendChild(li);
                     ul.appendChild(detail);
                 });
+                
                 catDiv.appendChild(ul);
                 tabContent.appendChild(catDiv);
                 overview.appendChild(tabContent);
             });
         }
-        document.getElementById('backToTest').onclick = function() {
-            window.location.href = 'result_manual.html';
-        };
+        
         // 匯出 PDF
         function exportPDF(record) {
             // 分級判斷
@@ -327,6 +642,7 @@
             if (score <= 37) { level = '低焦慮'; badgeColor = '#2ecc71'; }
             else if (score <= 44) { level = '中度焦慮'; badgeColor = '#f1c40f'; textColor = '#2c3e50'; }
             else { level = '高焦慮'; badgeColor = '#e74c3c'; }
+            
             // 建立一個隱藏的 div 作為匯出內容
             const tempDiv = document.createElement('div');
             tempDiv.style.padding = '24px';
@@ -337,20 +653,31 @@
                 <p style='font-size:15px;'><b>姓名：</b>${record.playerName}</p>
                 <p style='font-size:15px;'><b>運動項目：</b>${record.sport}</p>
                 <p style='font-size:15px;'><b>總分：</b>${score} <span style='display:inline-block;padding:2px 10px;border-radius:10px;background:${badgeColor};color:${textColor};font-weight:bold;'>${level}</span></p>
+                <p style='font-size:15px;'><b>心理師：</b>${record.psychologistName || '未填寫'}</p>
                 <p style='font-size:15px;'><b>測驗時間：</b>${new Date(record.timestamp).toLocaleString()}</p>
                 <p style='font-size:15px;'><b>心理師建議：</b><br><span style='white-space:pre-line;'>${record.notes || ''}</span></p>
                 <br>
                 <div style='width:100%;overflow-x:auto;'>
                 <table border='1' cellspacing='0' cellpadding='6' style='width:100%;min-width:600px;font-size:14px;border-collapse:collapse;text-align:center;'>
-                  <tr style='background:#2ecc71;color:#fff;'><th style='width:100px;'>STAI 分數區間</th><th style='width:100px;'>焦慮程度</th><th'>說明</th></tr>
+                  <tr style='background:#2ecc71;color:#fff;'><th style='width:100px;'>STAI 分數區間</th><th style='width:100px;'>焦慮程度</th><th>說明</th></tr>
                   <tr style='background:rgba(46,204,113,0.08);'><td>20–37</td><td style='color:#2ecc71;font-weight:bold;'>低焦慮</td><td>正常範圍，日常無明顯焦慮困擾</td></tr>
                   <tr style='background:rgba(241,196,15,0.08);'><td>38–44</td><td style='color:#f1c40f;font-weight:bold;'>中度焦慮</td><td>有部分焦慮症狀，需觀察或適度調整</td></tr>
                   <tr style='background:rgba(231,76,60,0.08);'><td>45–80</td><td style='color:#e74c3c;font-weight:bold;'>高焦慮</td><td>明顯焦慮狀態，建議進行介入與追蹤</td></tr>
                 </table>
                 </div>
+                <div style='margin-top:20px;padding:15px;background:#f8f9fa;border-radius:8px;'>
+                    <h3 style='color:#2c3e50;margin-top:0;'>建議訓練方向：</h3>
+                    <p style='font-size:14px;line-height:1.6;'>
+                        • 根據 STAI 評估出的焦慮程度進行分組：<br>
+                        &nbsp;&nbsp;&nbsp;o 高焦慮組 → 導入 SMR 神經回饋訓練或呼吸調節訓練。<br>
+                        &nbsp;&nbsp;&nbsp;o 低焦慮組 → 持續強化專注與動作穩定性。
+                    </p>
+                </div>
                 <div style='height:40px;'></div>
             `;
+            
             document.body.appendChild(tempDiv);
+            
             html2pdf().set({
                 margin: [20, 10, 30, 10],
                 filename: `STAI_${record.playerName}_${record.sport}.pdf`,

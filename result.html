@@ -27,12 +27,85 @@
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background-color: var(--white);
-            padding: 20px;
+            max-width: 1200px;
+            margin: 40px auto;
+            background: var(--white);
             border-radius: 15px;
             box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
+        .main-content {
+            display: flex;
+            gap: 30px;
+        }
+        .left-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        .right-panel {
+            flex: 1;
+            min-width: 0;
+        }
+        .panel-title {
+            color: var(--accent-color);
+            font-size: 1.2em;
+            margin-bottom: 15px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent-color);
+        }
+        @media (max-width: 768px) {
+            .main-content {
+                flex-direction: column;
+            }
+            .container {
+                margin: 20px;
+                padding: 20px;
+            }
+        }
+        .anxiety-levels {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .level-item {
+            background: #fff;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .level-header {
+            padding: 12px 15px;
+            color: white;
+        }
+        .level-header.low { background: #2ecc71; }
+        .level-header.medium { background: #f1c40f; color: #2c3e50; }
+        .level-header.high { background: #e74c3c; }
+        .level-content {
+            padding: 15px;
+            background: #f8f9fa;
+        }
+        .training-suggestions {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .suggestion-item {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .suggestion-item h3 {
+            color: var(--accent-color);
+            margin: 0 0 10px 0;
+        }
+        .suggestion-item ul {
+            margin: 0;
+            padding-left: 20px;
+        }
+        .suggestion-item li {
+            margin: 5px 0;
+            color: var(--text-color);
         }
         
         h1, h2 {
@@ -53,10 +126,24 @@
         
         .player-info {
             background-color: var(--light-bg);
-            padding: 15px;
+            padding: 20px;
             border-radius: 10px;
             margin-bottom: 20px;
             border: 1px solid var(--accent-color);
+        }
+        
+        .info-item {
+            margin-bottom: 15px;
+        }
+        
+        .info-item label {
+            font-weight: bold;
+            color: var(--text-color);
+            margin-right: 10px;
+        }
+        
+        .info-item span {
+            color: var(--accent-color);
         }
         
         .score-section {
@@ -271,171 +358,204 @@
                 font-size: 15px;
             }
         }
+        
+        .input-group {
+            margin-bottom: 20px;
+            width: 100%;
+            box-sizing: border-box;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 8px;
+            color: var(--text-color);
+            font-weight: bold;
+        }
+        
+        input[type="text"],
+        input[type="number"],
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 16px;
+            transition: border-color 0.3s;
+            box-sizing: border-box;
+        }
+        
+        input[type="text"]:focus,
+        input[type="number"]:focus,
+        select:focus {
+            border-color: var(--primary-color);
+            outline: none;
+        }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>STAI 情境焦慮量表 - 測驗結果</h1>
-        
-        <div class="player-info">
-            <h2>選手資訊</h2>
-            <p>姓名：<span id="playerName"></span></p>
-            <p>運動項目：<span id="sport"></span></p>
-        </div>
-
-        <div class="score-section">
-            <h2>測驗結果</h2>
-            <div class="total-score" id="totalScore"></div>
-            <div class="anxiety-level" id="anxietyLevel"></div>
-        </div>
-
-        <h2>各題得分明細</h2>
-        <table id="scoreDetails">
-            <thead>
-                <tr>
-                    <th>題號</th>
-                    <th>題目</th>
-                    <th>得分</th>
-                    <th>備註</th>
-                </tr>
-            </thead>
-            <tbody>
-            </tbody>
-        </table>
-
-        <table>
-            <tr>
-                <th>STAI 分數區間</th>
-                <th>焦慮程度</th>
-                <th>說明</th>
-            </tr>
-            <tr class="low-anxiety">
-                <td>20–37</td>
-                <td>低焦慮</td>
-                <td>正常範圍，日常無明顯焦慮困擾</td>
-            </tr>
-            <tr class="medium-anxiety">
-                <td>38–44</td>
-                <td>中度焦慮</td>
-                <td>有部分焦慮症狀，需觀察或適度調整</td>
-            </tr>
-            <tr class="high-anxiety">
-                <td>45–80</td>
-                <td>高焦慮</td>
-                <td>明顯焦慮狀態，建議進行介入與追蹤</td>
-            </tr>
-        </table>
-
-        <div class="recommendation-section">
-            <h2>心理介入建議</h2>
-            <p>根據 STAI 評估出的焦慮程度進行分組：</p>
-            <ul>
-                <li>高焦慮組 → 導入 SMR 神經回饋訓練 或呼吸調節訓練</li>
-                <li>低焦慮組 → 持續強化專注與動作穩定性</li>
-            </ul>
-        </div>
-
-        <div class="recommendation-section">
-            <h2>運動心理評估與建議</h2>
-            <textarea id="psychologistNotes" placeholder="請在此輸入對選手的運動心理評估與建議..."></textarea>
-            <div class="button-container">
-                <button class="save-button" onclick="saveNotes()">儲存評估建議</button>
-                <button class="restart-button" onclick="restartTest()">重新測驗</button>
+        <h1>STAI 測驗結果</h1>
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="panel-title">測驗結果</div>
+                <div class="player-info">
+                    <div class="info-item">
+                        <label>選手姓名：</label>
+                        <span id="playerName"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>運動項目：</label>
+                        <span id="sport"></span>
+                    </div>
+                    <div class="info-item">
+                        <label>測驗時間：</label>
+                        <span id="testTime"></span>
+                    </div>
+                </div>
+                <div class="score-display">
+                    <div class="total-score" id="displayScore"></div>
+                    <div class="anxiety-level" id="anxietyLevel"></div>
+                </div>
+                <div class="input-group">
+                    <label>心理師姓名：</label>
+                    <input type="text" id="psychologistName" required>
+                </div>
+                <div class="input-group">
+                    <label>心理師建議：</label>
+                    <textarea id="notes" rows="4" required></textarea>
+                </div>
+                <div class="button-container">
+                    <button class="save-button" onclick="saveNotes()">儲存建議</button>
+                    <button class="restart-button" onclick="restartTest()">重新測驗</button>
+                </div>
+            </div>
+            <div class="right-panel">
+                <div class="panel-title">焦慮程度說明</div>
+                <div class="anxiety-levels">
+                    <div class="level-item">
+                        <div class="level-header low">
+                            <span class="level-title">低焦慮 (20-37分)</span>
+                        </div>
+                        <div class="level-content">
+                            <p>正常範圍，日常無明顯焦慮困擾</p>
+                        </div>
+                    </div>
+                    <div class="level-item">
+                        <div class="level-header medium">
+                            <span class="level-title">中度焦慮 (38-44分)</span>
+                        </div>
+                        <div class="level-content">
+                            <p>有部分焦慮症狀，需觀察或適度調整</p>
+                        </div>
+                    </div>
+                    <div class="level-item">
+                        <div class="level-header high">
+                            <span class="level-title">高焦慮 (45-80分)</span>
+                        </div>
+                        <div class="level-content">
+                            <p>明顯焦慮狀態，建議進行介入與追蹤</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="panel-title" style="margin-top: 30px;">建議訓練方向</div>
+                <div class="training-suggestions">
+                    <div class="suggestion-item">
+                        <h3>高焦慮組</h3>
+                        <ul>
+                            <li>導入 SMR 神經回饋訓練</li>
+                            <li>呼吸調節訓練</li>
+                            <li>放鬆技巧練習</li>
+                            <li>壓力管理策略</li>
+                        </ul>
+                    </div>
+                    <div class="suggestion-item">
+                        <h3>低焦慮組</h3>
+                        <ul>
+                            <li>持續強化專注力</li>
+                            <li>動作穩定性訓練</li>
+                            <li>競技心理技能培養</li>
+                            <li>表現目標設定</li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
 
     <script>
-        const questions = [
-            "我現在覺得心裡平靜",
-            "我現在覺得安全",
-            "我現在是緊繃的",
-            "我現在覺得很緊張",
-            "我現在覺得很放鬆",
-            "我現在覺得生氣",
-            "我現在正擔心可能將有不幸的事會發生",
-            "我現在覺得很滿意",
-            "我現在覺得害怕",
-            "我現在覺得心裡舒適",
-            "我覺得我是自信的",
-            "我覺得我很神經質",
-            "我常常是戰戰兢兢的",
-            "我覺得自己優柔寡斷",
-            "我現在是放鬆的",
-            "我現在覺得很滿足",
-            "我現在是憂慮的",
-            "我現在覺得困惑",
-            "我現在覺得穩定",
-            "我現在覺得很愉快"
-        ];
+        document.addEventListener('DOMContentLoaded', function() {
+            // 從 localStorage 獲取數據
+            const playerName = localStorage.getItem('playerName');
+            const sport = localStorage.getItem('sport');
+            const totalScore = parseInt(localStorage.getItem('staiTotalScore'));
+            const answers = JSON.parse(localStorage.getItem('staiAnswers'));
+            const testTime = new Date().toLocaleString('zh-TW');
 
-        const reverseQuestions = [1, 2, 5, 8, 10, 11, 15, 16, 19, 20];
+            // 顯示選手資訊
+            document.getElementById('playerName').textContent = playerName;
+            document.getElementById('sport').textContent = sport;
+            document.getElementById('testTime').textContent = testTime;
 
-        const playerName = localStorage.getItem('playerName');
-        const sport = localStorage.getItem('sport');
-        const totalScore = parseInt(localStorage.getItem('staiTotalScore'));
-        const answers = JSON.parse(localStorage.getItem('staiAnswers'));
+            // 顯示總分
+            const displayScoreElement = document.getElementById('displayScore');
+            if (displayScoreElement && totalScore) {
+                displayScoreElement.textContent = totalScore;
+            }
 
-        document.getElementById('playerName').textContent = playerName;
-        document.getElementById('sport').textContent = sport;
-        document.getElementById('totalScore').textContent = totalScore;
-
-        let anxietyLevel = '';
-        let anxietyClass = '';
-        
-        if (totalScore <= 37) {
-            anxietyLevel = '低焦慮';
-            anxietyClass = 'low';
-        } else if (totalScore <= 44) {
-            anxietyLevel = '中度焦慮';
-            anxietyClass = 'medium';
-        } else {
-            anxietyLevel = '高焦慮';
-            anxietyClass = 'high';
-        }
-        
-        const anxietyLevelElement = document.getElementById('anxietyLevel');
-        anxietyLevelElement.textContent = `焦慮程度：${anxietyLevel}`;
-        anxietyLevelElement.classList.add(anxietyClass);
-
-        // 顯示各題得分
-        const scoreDetails = document.querySelector('#scoreDetails tbody');
-        answers.forEach((score, index) => {
-            const row = document.createElement('tr');
-            const isReverse = reverseQuestions.includes(index + 1);
-            const originalScore = isReverse ? 5 - score : score;
+            // 判斷焦慮程度
+            let anxietyLevel = '';
+            let anxietyClass = '';
             
-            row.innerHTML = `
-                <td>${index + 1}</td>
-                <td>${questions[index]}</td>
-                <td>${score}</td>
-                <td>${isReverse ? '<span class="reverse-score">反向計分</span>' : ''}</td>
-            `;
-            scoreDetails.appendChild(row);
+            if (totalScore <= 37) {
+                anxietyLevel = '低焦慮';
+                anxietyClass = 'low';
+            } else if (totalScore <= 44) {
+                anxietyLevel = '中度焦慮';
+                anxietyClass = 'medium';
+            } else {
+                anxietyLevel = '高焦慮';
+                anxietyClass = 'high';
+            }
+            
+            // 顯示焦慮程度
+            const anxietyLevelElement = document.getElementById('anxietyLevel');
+            if (anxietyLevelElement) {
+                anxietyLevelElement.textContent = `焦慮程度：${anxietyLevel}`;
+                anxietyLevelElement.classList.add(anxietyClass);
+            }
         });
 
         function saveNotes() {
-            const notes = document.getElementById('psychologistNotes').value;
-            // 取得現有資料
-            const playerName = localStorage.getItem('playerName');
-            const sport = localStorage.getItem('sport');
-            const totalScore = localStorage.getItem('staiTotalScore');
-            const answers = localStorage.getItem('staiAnswers');
-            const timestamp = new Date().toISOString();
-            // 新增一筆紀錄
-            const record = {
-                playerName,
-                sport,
-                totalScore,
-                answers,
-                notes,
-                timestamp
-            };
+            const notes = document.getElementById('notes').value;
+            const psychologistName = document.getElementById('psychologistName').value;
+            if (!psychologistName) {
+                alert('請輸入心理師姓名');
+                return;
+            }
+            if (!notes) {
+                alert('請輸入評估建議');
+                return;
+            }
+            
+            // 取得現有的結果
             let results = JSON.parse(localStorage.getItem('staiResults') || '[]');
+            
+            // 建立新的記錄
+            const record = {
+                playerName: localStorage.getItem('playerName'),
+                sport: localStorage.getItem('sport'),
+                totalScore: localStorage.getItem('staiTotalScore'),
+                notes: notes,
+                psychologistName: psychologistName,
+                timestamp: new Date().toISOString()
+            };
+            
+            // 加入新記錄
             results.push(record);
+            
+            // 儲存更新後的結果
             localStorage.setItem('staiResults', JSON.stringify(results));
-            // 仍然單獨存 notes 以便頁面顯示
-            localStorage.setItem('psychologistNotes', notes);
+            
             alert('評估建議已儲存！');
             window.location.href = 'results_overview.html';
         }
@@ -447,11 +567,6 @@
             localStorage.removeItem('psychologistNotes');
             // 保留選手資訊，方便重新測驗
             window.location.href = 'index.html';
-        }
-
-        const savedNotes = localStorage.getItem('psychologistNotes');
-        if (savedNotes) {
-            document.getElementById('psychologistNotes').value = savedNotes;
         }
     </script>
 </body>
