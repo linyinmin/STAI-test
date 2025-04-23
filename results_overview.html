@@ -694,27 +694,21 @@
             if (score <= 37) { level = '低焦慮'; badgeColor = '#2ecc71'; }
             else if (score <= 44) { level = '中度焦慮'; badgeColor = '#f1c40f'; textColor = '#2c3e50'; }
             else { level = '高焦慮'; badgeColor = '#e74c3c'; }
-
             // 建立一個隱藏的 div 作為匯出內容
             const tempDiv = document.createElement('div');
             tempDiv.style.padding = '24px';
             tempDiv.style.fontFamily = 'Noto Sans TC, Arial, sans-serif';
             tempDiv.style.width = '700px';
-            tempDiv.style.position = 'fixed';
-            tempDiv.style.left = '-9999px';
-            tempDiv.style.top = '0';
-            tempDiv.style.zIndex = '-9999';
             tempDiv.innerHTML = `
-                <h2 style='color:#2ecc71;text-align:left;margin-bottom:18px;'>STAI 測驗結果</h2>
+                <h2 style='color:#2ecc71;text-alignleft;margin-bottom:18px;'>STAI 測驗結果</h2>
                 <p style='font-size:15px;'><b>姓名：</b>${record.playerName}</p>
                 <p style='font-size:15px;'><b>運動項目：</b>${record.sport}</p>
                 <p style='font-size:15px;'><b>總分：</b>${score} <span style='display:inline-block;padding:2px 10px;border-radius:10px;background:${badgeColor};color:${textColor};font-weight:bold;'>${level}</span></p>
-                <p style='font-size:15px;'><b>心理師：</b>${record.psychologistName || '未填寫'}</p>
                 <p style='font-size:15px;'><b>測驗時間：</b>${new Date(record.timestamp).toLocaleString()}</p>
                 <p style='font-size:15px;'><b>心理師建議：</b><br><span style='white-space:pre-line;'>${record.notes || ''}</span></p>
                 <br>
                 <div style='width:100%;overflow-x:auto;'>
-                <table border='1' cellspacing='0' cellpadding='6' style='width:100%;min-width:600px;font-size:14px;border-collapse:collapse;text-align:center;table-layout:auto;'>
+                <table border='1' cellspacing='0' cellpadding='6' style='width:100%;min-width:600px;font-size:14px;border-collapse:collapse;text-align:center;'>
                   <tr style='background:#2ecc71;color:#fff;'><th style='width:100px;'>STAI 分數區間</th><th style='width:100px;'>焦慮程度</th><th>說明</th></tr>
                   <tr style='background:rgba(46,204,113,0.08);'><td>20–37</td><td style='color:#2ecc71;font-weight:bold;'>低焦慮</td><td>正常範圍，日常無明顯焦慮困擾</td></tr>
                   <tr style='background:rgba(241,196,15,0.08);'><td>38–44</td><td style='color:#f1c40f;font-weight:bold;'>中度焦慮</td><td>有部分焦慮症狀，需觀察或適度調整</td></tr>
@@ -731,22 +725,12 @@
                 </div>
                 <div style='height:40px;'></div>
             `;
-
             document.body.appendChild(tempDiv);
-
             html2pdf().set({
-                margin: [15, 15, 15, 15], // 減少 margin，爭取寬度
+                margin: [20, 10, 30, 10],
                 filename: `STAI_${record.playerName}_${record.sport}.pdf`,
-                html2canvas: {
-                    scale: 3,  // 提升清晰度與寬度準確性
-                    useCORS: true // 若有圖片需要跨域加這個
-                },
-                jsPDF: {
-                    unit: 'mm',
-                    format: 'a4',
-                    orientation: 'portrait'
-                },
-                pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } // 可避免表格拆頁
+                html2canvas: { scale: 2 },
+                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }
             }).from(tempDiv).save().then(() => {
                 document.body.removeChild(tempDiv);
             });
